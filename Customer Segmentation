@@ -1,0 +1,32 @@
+# Use transaction and demographic data for clustering 
+clustering_data = merged_data.groupby('CustomerID').agg({ 
+'TotalValue': 'sum', 
+'Quantity': 'sum', 
+'Price': 'mean', 
+}).reset_index() 
+# Scale data 
+scaler = StandardScaler() 
+clustering_data_scaled = 
+scaler.fit_transform(clustering_data.drop(columns=['CustomerID'])) 
+# Determine the optimal number of clusters using Davies-Bouldin Index 
+db_scores = [] 
+for k in range(2, 11): 
+kmeans = KMeans(n_clusters=k, 
+random_state=42).fit(clustering_data_scaled) 
+db_score = davies_bouldin_score(clustering_data_scaled, kmeans.labels_) 
+db_scores.append((k, db_score)) 
+# Plot DB scores 
+plt.figure(figsize=(8, 5)) 
+db_values = [score[1] for score in db_scores] 
+plt.plot(range(2, 11), db_values, marker='o') 
+plt.title("Davies-Bouldin Index for Different Cluster Counts") 
+plt.xlabel("Number of Clusters") 
+plt.ylabel("DB Index") 
+plt.show() 
+# Choose optimal number of clusters and fit KMeans 
+optimal_k = min(db_scores, key=lambda x: x[1])[0] 
+kmeans = KMeans(n_clusters=optimal_k, random_state=42) 
+clusters = kmeans.fit_predict(clustering_data_scaled) 
+# Add cluster labels to data 
+clustering_data['Cluster'] = clusters 
+print(clustering_data.head())
