@@ -1,0 +1,32 @@
+# Prepare data for similarity calculation 
+customer_data = merged_data.groupby('CustomerID').agg({ 
+'TotalValue': 'sum', 
+'Quantity': 'sum', 
+'Region': lambda x: x.mode()[0]  # Most frequent region 
+}).reset_index() 
+# Convert categorical region to numerical 
+customer_data = pd.get_dummies(customer_data, columns=['Region']) 
+# Normalize data 
+scaler = StandardScaler() 
+customer_data_scaled = 
+scaler.fit_transform(customer_data.drop(columns=['CustomerID'])) 
+# Compute cosine similarity 
+similarity_matrix = cosine_similarity(customer_data_scaled) 
+# Find top 3 similar customers for each of the first 20 customers 
+lookalikes = {} 
+for idx in range(20): 
+scores = similarity_matrix[idx] 
+similar_customers = sorted( 
+[(customer_data['CustomerID'][i], scores[i]) for i in 
+range(len(scores)) if i != idx], 
+key=lambda x: x[1], 
+reverse=True 
+)[:3] 
+lookalikes[customer_data['CustomerID'][idx]] = similar_customers 
+# Save Lookalikes to CSV 
+lookalike_df = pd.DataFrame([ 
+{'CustomerID': cust, 'Lookalikes': similar} 
+for cust, similar in lookalikes.items() 
+]) 
+lookalike_df.to_csv("FirstName_LastName_Lookalike.csv", index=False) 
+print("\nLookalike CSV saved!")
