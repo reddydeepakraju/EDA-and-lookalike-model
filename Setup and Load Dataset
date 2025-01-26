@@ -1,0 +1,25 @@
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+from sklearn.metrics.pairwise import cosine_similarity 
+from sklearn.cluster import KMeans 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.metrics import davies_bouldin_score 
+import numpy as np 
+# Load the datasets 
+customers_url = "https://drive.google.com/uc?id=1bu_-
+mo79VdUG9oin4ybfFGRUSXAe-WE" 
+products_url = "https://drive.google.com/uc?id=1IKuDizVapw
+hyktwfpoAoaGtHtTNHfd0" 
+transactions_url = "https://drive.google.com/uc?id=1saEqdbBB
+vuk2hxoAf4TzDEsykdKlzbF" 
+customers = pd.read_csv(customers_url) 
+products = pd.read_csv(products_url) 
+transactions = pd.read_csv(transactions_url) 
+# Quick preview of data 
+print("Customers:") 
+print(customers.head()) 
+print("\nProducts:") 
+print(products.head()) 
+print("\nTransactions:") 
+print(transactions.head()) 
